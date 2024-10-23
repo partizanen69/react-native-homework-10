@@ -1,6 +1,7 @@
 import { ActivityIndicator, StyleSheet } from "react-native";
 import { RegistrationScreen } from "./Screens/RegistrationScreen";
 import { useFonts } from "expo-font";
+import { LoginScreen } from "./Screens/LoginScreen";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -14,14 +15,6 @@ export default function App() {
     return <ActivityIndicator size="large" />; // Показуй індикатор завантаження
   }
 
-  return <RegistrationScreen />;
+  // return <RegistrationScreen />;
+  return <LoginScreen />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});

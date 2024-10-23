@@ -1,15 +1,16 @@
 import { FC, useState } from "react";
-import { StyleSheet, TextInput, View } from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
+import { InputState } from "../Screens/RegistrationScreen.types";
 
 export const Input: FC<{
   placeholder: string;
-  value: string;
+  inputState: InputState;
   onChangeText: (text: string) => void;
   secureTextEntry?: boolean;
   rightButton?: React.ReactNode;
 }> = ({
   placeholder,
-  value,
+  inputState,
   onChangeText,
   secureTextEntry = false,
   rightButton,
@@ -23,11 +24,16 @@ export const Input: FC<{
   const onBlur = () => {
     setIsFocused(false);
   };
+
   return (
     <View style={styles.inputWrap}>
       <TextInput
-        value={value}
-        style={[styles.input, focused && styles.inputFocused]}
+        value={inputState.value}
+        style={[
+          styles.input,
+          focused && styles.inputFocused,
+          !inputState.isValid && styles.inputInvalid,
+        ]}
         placeholder={placeholder}
         onChangeText={onChangeText}
         secureTextEntry={secureTextEntry}
@@ -35,6 +41,9 @@ export const Input: FC<{
         onBlur={onBlur}
       />
       {rightButton && <View style={styles.rightButton}>{rightButton}</View>}
+      {!inputState.isValid && (
+        <Text style={styles.invalidText}>{inputState.error}</Text>
+      )}
     </View>
   );
 };
@@ -66,5 +75,16 @@ const styles = StyleSheet.create({
   inputFocused: {
     borderColor: "#FF6C00",
     backgroundColor: "#FFFFFF",
+  },
+  inputInvalid: {
+    borderColor: "red",
+    backgroundColor: "#FFFFFF",
+  },
+  invalidText: {
+    color: "red",
+    fontSize: 12,
+    fontWeight: 400,
+    lineHeight: 14.06,
+    textAlign: "left",
   },
 });

@@ -1,5 +1,4 @@
 import {
-  Dimensions,
   Image,
   Keyboard,
   KeyboardAvoidingView,
@@ -14,13 +13,7 @@ import { Input } from "../components/Input";
 import { useState } from "react";
 import { InputState } from "./RegistrationScreen.types";
 
-const SCREEN_WIDTH = Dimensions.get("window").width;
-
-export const RegistrationScreen = () => {
-  const [loginState, setLoginState] = useState<InputState>({
-    value: "",
-    isValid: true,
-  });
+export const LoginScreen = () => {
   const [emailState, setEmailState] = useState<InputState>({
     value: "",
     isValid: true,
@@ -31,32 +24,20 @@ export const RegistrationScreen = () => {
   });
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
-  const handleLoginChange = (text: string) => {
-    setLoginState({ value: text, isValid: true });
-  };
-
   const handleEmailChange = (text: string) => {
     setEmailState({ value: text, isValid: true });
   };
 
   const handlePasswordChange = (text: string) => {
+    console.log("Password changed", text);
     setPasswordState({ value: text, isValid: true });
   };
 
-  const handleRegistration = () => {
+  const handleLogin = () => {
     console.log("Form values", {
-      login: loginState.value,
       email: emailState.value,
       password: passwordState.value,
     });
-
-    if (loginState.value.trim() === "") {
-      setLoginState((prev) => ({
-        ...prev,
-        isValid: false,
-        error: "Логін не має бути порожнім",
-      }));
-    }
 
     if (emailState.value.trim() === "") {
       setEmailState((prev) => ({
@@ -74,11 +55,11 @@ export const RegistrationScreen = () => {
       }));
     }
 
-    if (!loginState.isValid || !emailState.isValid || !passwordState.isValid) {
+    if (!emailState.isValid || !passwordState.isValid) {
       return;
     }
 
-    console.log("Registering...");
+    console.log("Logging in...");
   };
 
   return (
@@ -92,23 +73,10 @@ export const RegistrationScreen = () => {
           resizeMode="cover"
           style={styles.image}
         />
-        <View style={styles.registrationFormWrap}>
-          <View style={styles.avatarWrap}>
-            <Image
-              source={require("../assets/icons/add.png")}
-              // resizeMode="cover"
-              style={styles.avatarIconAdd}
-            />
-          </View>
-
-          <Text style={styles.header}>Реєстрація</Text>
+        <View style={styles.loginFormWrap}>
+          <Text style={styles.header}>Увійти</Text>
 
           <View style={styles.formFields}>
-            <Input
-              placeholder="Логін"
-              inputState={loginState}
-              onChangeText={handleLoginChange}
-            />
             <Input
               placeholder="Адреса електронної пошти"
               inputState={emailState}
@@ -129,18 +97,15 @@ export const RegistrationScreen = () => {
             />
           </View>
 
-          <View style={styles.registrationButtonWrap}>
-            <TouchableOpacity
-              onPress={handleRegistration}
-              style={styles.registrationButton}
-            >
-              <Text style={styles.registrationButtonText}>Зареєструватися</Text>
+          <View style={styles.loginButtonWrap}>
+            <TouchableOpacity onPress={handleLogin} style={styles.loginButton}>
+              <Text style={styles.loginButtonText}>Увійти</Text>
             </TouchableOpacity>
 
             <View style={styles.underButtonWrap}>
-              <Text style={styles.underButtonText}>Вже є акаунт? </Text>
+              <Text style={styles.underButtonText}>Немає акаунту? </Text>
               <TouchableOpacity>
-                <Text style={styles.underButtonText}>Увійти</Text>
+                <Text style={styles.underButtonText}>Зареєструватися</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -164,10 +129,13 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
-  registrationFormWrap: {
+  loginFormWrap: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
     backgroundColor: "white",
     alignItems: "center",
-    width: SCREEN_WIDTH,
+    width: "100%",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
     paddingTop: 92,
@@ -192,7 +160,7 @@ const styles = StyleSheet.create({
     lineHeight: 18.75,
     color: "#1B4373",
   },
-  registrationButtonWrap: {
+  loginButtonWrap: {
     width: "100%",
     paddingTop: 43,
     paddingBottom: 78,
@@ -200,7 +168,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 16,
   },
-  registrationButton: {
+  loginButton: {
     width: "100%",
     borderRadius: 100,
     backgroundColor: "#FF6C00",
@@ -208,7 +176,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     alignItems: "center",
   },
-  registrationButtonText: {
+  loginButtonText: {
     fontFamily: "Roboto-Regular",
     fontSize: 16,
     lineHeight: 18.75,
@@ -225,18 +193,5 @@ const styles = StyleSheet.create({
     lineHeight: 18.75,
     color: "#1B4371",
     textAlign: "center",
-  },
-  avatarWrap: {
-    width: 120,
-    height: 120,
-    borderRadius: 16,
-    backgroundColor: "#F6F6F6",
-    position: "absolute",
-    top: -60,
-  },
-  avatarIconAdd: {
-    position: "absolute",
-    right: -12,
-    bottom: 14,
   },
 });
