@@ -11,9 +11,12 @@ import {
 } from "react-native";
 import { Input } from "../components/Input";
 import { useState } from "react";
-import { InputState } from "./RegistrationScreen.types";
+import { InputState } from "./RegistrationScreen/RegistrationScreen.types";
+import { ScreenName } from "../App.consts";
+import { useNavigation } from "@react-navigation/native";
 
 export const LoginScreen = () => {
+  const navigation = useNavigation();
   const [emailState, setEmailState] = useState<InputState>({
     value: "",
     isValid: true,
@@ -98,13 +101,21 @@ export const LoginScreen = () => {
           </View>
 
           <View style={styles.loginButtonWrap}>
-            <TouchableOpacity onPress={handleLogin} style={styles.loginButton}>
+            <TouchableOpacity
+              // onPress={handleLogin}
+              onPress={() => navigation.navigate(ScreenName.Home as never)}
+              style={styles.loginButton}
+            >
               <Text style={styles.loginButtonText}>Увійти</Text>
             </TouchableOpacity>
 
             <View style={styles.underButtonWrap}>
               <Text style={styles.underButtonText}>Немає акаунту? </Text>
-              <TouchableOpacity>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate(ScreenName.Registration as never)
+                }
+              >
                 <Text style={styles.underButtonText}>Зареєструватися</Text>
               </TouchableOpacity>
             </View>

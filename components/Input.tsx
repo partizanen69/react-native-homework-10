@@ -1,6 +1,13 @@
 import { FC, useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
-import { InputState } from "../Screens/RegistrationScreen.types";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TextStyle,
+  View,
+  ViewStyle,
+} from "react-native";
+import { InputState } from "../Screens/RegistrationScreen/RegistrationScreen.types";
 
 export const Input: FC<{
   placeholder: string;
@@ -8,12 +15,18 @@ export const Input: FC<{
   onChangeText: (text: string) => void;
   secureTextEntry?: boolean;
   rightButton?: React.ReactNode;
+  wrapStyle?: ViewStyle;
+  inputStyle?: TextStyle;
+  rightButtonStyle?: ViewStyle;
 }> = ({
   placeholder,
   inputState,
   onChangeText,
   secureTextEntry = false,
   rightButton,
+  wrapStyle,
+  inputStyle,
+  rightButtonStyle,
 }) => {
   const [focused, setIsFocused] = useState(false);
 
@@ -26,13 +39,14 @@ export const Input: FC<{
   };
 
   return (
-    <View style={styles.inputWrap}>
+    <View style={[styles.inputWrap, wrapStyle && wrapStyle]}>
       <TextInput
         value={inputState.value}
         style={[
           styles.input,
           focused && styles.inputFocused,
           !inputState.isValid && styles.inputInvalid,
+          inputStyle && inputStyle,
         ]}
         placeholder={placeholder}
         onChangeText={onChangeText}
@@ -40,7 +54,13 @@ export const Input: FC<{
         onFocus={onFocus}
         onBlur={onBlur}
       />
-      {rightButton && <View style={styles.rightButton}>{rightButton}</View>}
+      {rightButton && (
+        <View
+          style={[styles.rightButton, rightButtonStyle && rightButtonStyle]}
+        >
+          {rightButton}
+        </View>
+      )}
       {!inputState.isValid && (
         <Text style={styles.invalidText}>{inputState.error}</Text>
       )}

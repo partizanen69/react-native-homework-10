@@ -10,13 +10,16 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import { Input } from "../components/Input";
+import { Input } from "../../components/Input";
 import { useState } from "react";
 import { InputState } from "./RegistrationScreen.types";
+import { useNavigation } from "@react-navigation/native";
+import { ScreenName } from "../../App.consts";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
 export const RegistrationScreen = () => {
+  const navigation = useNavigation();
   const [loginState, setLoginState] = useState<InputState>({
     value: "",
     isValid: true,
@@ -88,14 +91,14 @@ export const RegistrationScreen = () => {
         behavior={Platform.OS == "ios" ? "padding" : "height"}
       >
         <Image
-          source={require("../assets/images/registration-bg.png")}
+          source={require("../../assets/images/registration-bg.png")}
           resizeMode="cover"
           style={styles.image}
         />
         <View style={styles.registrationFormWrap}>
           <View style={styles.avatarWrap}>
             <Image
-              source={require("../assets/icons/add.png")}
+              source={require("../../assets/icons/add.png")}
               // resizeMode="cover"
               style={styles.avatarIconAdd}
             />
@@ -131,7 +134,8 @@ export const RegistrationScreen = () => {
 
           <View style={styles.registrationButtonWrap}>
             <TouchableOpacity
-              onPress={handleRegistration}
+              // onPress={handleRegistration}
+              onPress={() => navigation.navigate(ScreenName.Home as never)}
               style={styles.registrationButton}
             >
               <Text style={styles.registrationButtonText}>Зареєструватися</Text>
@@ -139,7 +143,9 @@ export const RegistrationScreen = () => {
 
             <View style={styles.underButtonWrap}>
               <Text style={styles.underButtonText}>Вже є акаунт? </Text>
-              <TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => navigation.navigate(ScreenName.Login as never)}
+              >
                 <Text style={styles.underButtonText}>Увійти</Text>
               </TouchableOpacity>
             </View>
