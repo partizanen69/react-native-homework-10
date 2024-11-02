@@ -4,11 +4,18 @@ import { StyleSheet, TextInput, View } from "react-native";
 export const CreatePostInput: FC<{
   placeholder: string;
   leftIcon?: React.ReactNode;
-}> = ({ placeholder, leftIcon }) => {
+  value: string;
+  onChangeText: (text: string) => void;
+}> = ({ placeholder, leftIcon, value, onChangeText }) => {
   return (
     <View style={styles.inputWrap}>
       {leftIcon && <View style={styles.leftIcon}>{leftIcon}</View>}
-      <TextInput style={styles.input} placeholder={placeholder} />
+      <TextInput
+        style={styles.input}
+        placeholder={placeholder}
+        value={value}
+        onChangeText={onChangeText}
+      />
     </View>
   );
 };
@@ -23,9 +30,8 @@ const styles = StyleSheet.create({
   input: {
     width: "100%",
     height: 50,
-    fontFamily: "Roboto",
+    fontFamily: "Roboto-Regular",
     fontSize: 16,
-    fontWeight: 400,
     lineHeight: 18.75,
     color: "#BDBDBD",
   },

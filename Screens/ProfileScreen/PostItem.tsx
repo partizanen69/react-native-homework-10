@@ -6,9 +6,10 @@ import { ThumbIcon } from "../../icons/thumb-icon";
 import { LocationIcon } from "../../icons/location-icon";
 import { useNavigation } from "@react-navigation/native";
 import { ScreenName } from "../../App.consts";
+import { RootStackNavigationProp } from "../../App.types";
 
 export const PostItem: FC<{ post: Post }> = ({ post }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<RootStackNavigationProp>();
 
   return (
     <View style={styles.postWrap}>
@@ -17,7 +18,7 @@ export const PostItem: FC<{ post: Post }> = ({ post }) => {
       <View style={styles.postInfoWrap}>
         <View style={styles.postInfoLeft}>
           <TouchableOpacity
-            onPress={() => navigation.navigate(ScreenName.Comments as never)}
+            onPress={() => navigation.navigate(ScreenName.Comments)}
           >
             <View style={styles.commentCount}>
               <MessageIcon />
@@ -29,10 +30,17 @@ export const PostItem: FC<{ post: Post }> = ({ post }) => {
             <Text style={styles.likesCountText}>{post.likesCount}</Text>
           </View>
         </View>
-        <View style={styles.location}>
+        <TouchableOpacity
+          style={styles.location}
+          onPress={() =>
+            navigation.navigate(ScreenName.Map, {
+              location: post.location,
+            })
+          }
+        >
           <LocationIcon />
           <Text style={styles.locationText}>{post.location}</Text>
-        </View>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -48,9 +56,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   postName: {
-    fontFamily: "Roboto",
+    fontFamily: "Roboto-Medium",
     fontSize: 16,
-    fontWeight: 500,
     lineHeight: 18.75,
     textAlign: "left",
     color: "#212121",
@@ -65,9 +72,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   commentCountText: {
-    fontFamily: "Roboto",
+    fontFamily: "Roboto-Regular",
     fontSize: 16,
-    fontWeight: 400,
     lineHeight: 18.75,
     textAlign: "left",
   },
@@ -77,9 +83,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   likesCountText: {
-    fontFamily: "Roboto",
+    fontFamily: "Roboto-Regular",
     fontSize: 16,
-    fontWeight: 400,
     lineHeight: 18.75,
     textAlign: "left",
   },
@@ -94,9 +99,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   locationText: {
-    fontFamily: "Roboto",
+    fontFamily: "Roboto-Regular",
     fontSize: 16,
-    fontWeight: 400,
     lineHeight: 18.75,
     textAlign: "right",
     textDecorationLine: "underline",

@@ -78,7 +78,6 @@ const styles = StyleSheet.create({
 
     fontFamily: "Roboto-Regular",
     fontSize: 16,
-    fontWeight: 400,
     lineHeight: 18.75,
     textAlign: "left",
   },
@@ -103,7 +102,7 @@ const styles = StyleSheet.create({
   invalidText: {
     color: "red",
     fontSize: 12,
-    fontWeight: 400,
+    fontFamily: "Roboto-Regular",
     lineHeight: 14.06,
     textAlign: "left",
   },

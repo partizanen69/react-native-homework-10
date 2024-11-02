@@ -1,23 +1,21 @@
 import {
   Dimensions,
   Image,
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
-  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import { BottomMenu } from "../../components/BottomMenu/BottomMenu";
 import { PostItem } from "../ProfileScreen/PostItem";
-import { posts } from "../../fixtures/posts";
+import { usePosts } from "../../store/posts";
+import { FC } from "react";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
-export const PostsScreen = () => {
+export const PostsScreen: FC = () => {
+  const { posts } = usePosts();
+
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
@@ -79,16 +77,14 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   userName: {
-    fontFamily: "Roboto",
+    fontFamily: "Roboto-Bold",
     fontSize: 13,
-    fontWeight: 700,
     lineHeight: 15.23,
     color: "#212121",
   },
   userEmail: {
-    fontFamily: "Roboto",
+    fontFamily: "Roboto-Regular",
     fontSize: 11,
-    fontWeight: 400,
     lineHeight: 12.89,
     color: "#212121CC",
   },

@@ -11,6 +11,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { ScreenName } from "./App.consts";
 import { BackIcon } from "./icons/back-arrow-icon";
 import { LogoutBtn } from "./components/LogoutBtn/LogoutBtn";
+import { MapScreen } from "./Screens/MapScreen/MapScreen";
 
 const MainStack = createStackNavigator();
 
@@ -40,7 +41,7 @@ export default function App() {
           options={{ headerShown: false }}
         />
         <MainStack.Screen
-          name={ScreenName.Home}
+          name={ScreenName.Posts}
           component={PostsScreen}
           options={{
             title: "Публікації",
@@ -61,6 +62,22 @@ export default function App() {
           component={CreatePostsScreen}
           options={{
             title: "Створити публікацію",
+            headerTitleStyle: styles.headerTitle,
+            headerBackTitleVisible: false,
+            headerBackImage: () => <BackIcon />,
+            headerLeftContainerStyle: {
+              paddingLeft: 16,
+            },
+            headerRightContainerStyle: {
+              paddingRight: 16,
+            },
+          }}
+        />
+        <MainStack.Screen
+          name={ScreenName.Map}
+          component={MapScreen}
+          options={{
+            title: "Карта",
             headerTitleStyle: styles.headerTitle,
             headerBackTitleVisible: false,
             headerBackImage: () => <BackIcon />,
@@ -103,9 +120,8 @@ export default function App() {
 
 const styles = StyleSheet.create({
   headerTitle: {
-    fontFamily: "Roboto",
+    fontFamily: "Roboto-Medium",
     fontSize: 17,
-    fontWeight: 500,
     lineHeight: 22,
     letterSpacing: -0.40799999237060547,
     textAlign: "center",

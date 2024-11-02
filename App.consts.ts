@@ -1,8 +1,9 @@
 export enum ScreenName {
-  Home = "Home",
+  Posts = "Posts",
   Registration = "Registration",
   Login = "Login",
   CreatePosts = "CreatePosts",
   Comments = "Comments",
   Profile = "Profile",
+  Map = "Map",
 }

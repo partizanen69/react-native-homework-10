@@ -15,11 +15,12 @@ import { useState } from "react";
 import { InputState } from "./RegistrationScreen.types";
 import { useNavigation } from "@react-navigation/native";
 import { ScreenName } from "../../App.consts";
+import { RootStackNavigationProp } from "../../App.types";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
 export const RegistrationScreen = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<RootStackNavigationProp>();
   const [loginState, setLoginState] = useState<InputState>({
     value: "",
     isValid: true,
@@ -134,8 +135,7 @@ export const RegistrationScreen = () => {
 
           <View style={styles.registrationButtonWrap}>
             <TouchableOpacity
-              // onPress={handleRegistration}
-              onPress={() => navigation.navigate(ScreenName.Home as never)}
+              onPress={() => navigation.navigate(ScreenName.Posts)}
               style={styles.registrationButton}
             >
               <Text style={styles.registrationButtonText}>Зареєструватися</Text>
@@ -144,7 +144,7 @@ export const RegistrationScreen = () => {
             <View style={styles.underButtonWrap}>
               <Text style={styles.underButtonText}>Вже є акаунт? </Text>
               <TouchableOpacity
-                onPress={() => navigation.navigate(ScreenName.Login as never)}
+                onPress={() => navigation.navigate(ScreenName.Login)}
               >
                 <Text style={styles.underButtonText}>Увійти</Text>
               </TouchableOpacity>
@@ -180,9 +180,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   header: {
-    fontFamily: "Roboto",
+    fontFamily: "Roboto-Medium",
     fontSize: 30,
-    fontWeight: 500,
     lineHeight: 35.16,
     letterSpacing: 0.01,
     textAlign: "center",

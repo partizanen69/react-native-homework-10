@@ -6,27 +6,24 @@ import { UserIcon } from "../../icons/user-icon";
 import { PlusIcon } from "../../icons/plus-icon";
 import { useNavigation } from "@react-navigation/native";
 import { ScreenName } from "../../App.consts";
+import { RootStackNavigationProp } from "../../App.types";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
 export const BottomMenu = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<RootStackNavigationProp>();
 
   return (
     <View style={styles.bottomMenu}>
-      <TouchableOpacity
-        onPress={() => navigation.navigate(ScreenName.Home as never)}
-      >
+      <TouchableOpacity onPress={() => navigation.navigate(ScreenName.Posts)}>
         <GridIcon />
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => navigation.navigate(ScreenName.CreatePosts as never)}
+        onPress={() => navigation.navigate(ScreenName.CreatePosts)}
       >
         <PlusIcon />
       </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => navigation.navigate(ScreenName.Profile as never)}
-      >
+      <TouchableOpacity onPress={() => navigation.navigate(ScreenName.Profile)}>
         <UserIcon />
       </TouchableOpacity>
     </View>

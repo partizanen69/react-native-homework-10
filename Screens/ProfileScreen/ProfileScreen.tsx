@@ -5,22 +5,20 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
-import { Post } from "./ProfileScreen.types";
 import { PostItem } from "./PostItem";
 import { CrossIcon } from "../../icons/cross-icon";
-import { LogoutIcon } from "../../icons/logout-icon";
 import { BottomMenu } from "../../components/BottomMenu/BottomMenu";
-import { ScreenName } from "../../App.consts";
-import { posts } from "../../fixtures/posts";
-import { useNavigation } from "@react-navigation/native";
 import { LogoutBtn } from "../../components/LogoutBtn/LogoutBtn";
+import { usePosts } from "../../store/posts";
+import { FC } from "react";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
-export const ProfileScreen = () => {
+export const ProfileScreen: FC = () => {
+  const { posts } = usePosts();
+
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
