@@ -1,17 +1,26 @@
 import { FC } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Alert, Image, StyleSheet, Text, View } from "react-native";
+import { Comment } from "../../firebase/firestore.types";
+import { useAppSelector } from "../../store/store";
+import { selectUser } from "../../store/userSelectors";
 
 export const CommentItem: FC<{ comment: Comment }> = ({ comment }) => {
+  const user = useAppSelector(selectUser);
+
+  if (!user) {
+    Alert.alert("Помилка", "Користувач не знайдений");
+    return null;
+  }
+
+  const isOwner = comment.userId === user.id;
+
   return (
     <View
-      style={[
-        styles.commentWrap,
-        comment.isOwner && { flexDirection: "row-reverse" },
-      ]}
+      style={[styles.commentWrap, isOwner && { flexDirection: "row-reverse" }]}
     >
       <View style={styles.commentLeft}>
         <Image
-          source={comment.avatar}
+          source={require("../../assets/images/avatar.png")}
           style={{ width: 28, height: 28 }}
           resizeMode="cover"
         />
@@ -20,22 +29,12 @@ export const CommentItem: FC<{ comment: Comment }> = ({ comment }) => {
       <View style={styles.commentRight}>
         <Text style={styles.commentText}>{comment.text}</Text>
 
-        <Text
-          style={[styles.commentDate, comment.isOwner && { textAlign: "left" }]}
-        >
+        <Text style={[styles.commentDate, isOwner && { textAlign: "left" }]}>
           {comment.date}
         </Text>
       </View>
     </View>
   );
-};
-
-export type Comment = {
-  id: number;
-  text: string;
-  date: string;
-  avatar: ReturnType<typeof require>;
-  isOwner: boolean;
 };
 
 const styles = StyleSheet.create({

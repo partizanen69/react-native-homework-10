@@ -1,5 +1,4 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Post } from "./ProfileScreen.types";
 import { FC } from "react";
 import { MessageIcon } from "../../icons/message-icon";
 import { ThumbIcon } from "../../icons/thumb-icon";
@@ -7,6 +6,7 @@ import { LocationIcon } from "../../icons/location-icon";
 import { useNavigation } from "@react-navigation/native";
 import { ScreenName } from "../../App.consts";
 import { RootStackNavigationProp } from "../../App.types";
+import { Post } from "../../firebase/firestore.types";
 
 export const PostItem: FC<{ post: Post }> = ({ post }) => {
   const navigation = useNavigation<RootStackNavigationProp>();
@@ -18,11 +18,13 @@ export const PostItem: FC<{ post: Post }> = ({ post }) => {
       <View style={styles.postInfoWrap}>
         <View style={styles.postInfoLeft}>
           <TouchableOpacity
-            onPress={() => navigation.navigate(ScreenName.Comments)}
+            onPress={() => navigation.navigate(ScreenName.Comments, { post })}
           >
             <View style={styles.commentCount}>
               <MessageIcon />
-              <Text style={styles.commentCountText}>{post.commentsCount}</Text>
+              <Text style={styles.commentCountText}>
+                {post.comments.length}
+              </Text>
             </View>
           </TouchableOpacity>
           <View style={styles.likesCount}>

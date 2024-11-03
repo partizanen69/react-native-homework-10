@@ -1,4 +1,7 @@
+import uuid from "react-native-uuid";
+
 import {
+  Alert,
   Image,
   Keyboard,
   KeyboardAvoidingView,
@@ -10,9 +13,68 @@ import {
 } from "react-native";
 import { Input } from "../../components/Input";
 import { SendIcon } from "../../icons/send-icon";
-import { Comment, CommentItem } from "./CommentItem";
+import { CommentItem } from "./CommentItem";
+import { Comment } from "../../firebase/firestore.types";
+import { FC, useState } from "react";
+import { addCommentToPost } from "../../firebase/firestore";
+import { tryExtractErrorMessage } from "../../App.utils";
+import {
+  CommentsScreenRouteProp,
+  RootStackNavigationProp,
+} from "../../App.types";
+import { useNavigation } from "@react-navigation/native";
+import { ScreenName } from "../../App.consts";
+import { selectUser } from "../../store/userSelectors";
+import { useAppDispatch, useAppSelector } from "../../store/store";
+import { postSliceActions } from "../../store/postSlice";
 
-export const CommentsScreen = () => {
+export const CommentsScreen: FC<{
+  route?: CommentsScreenRouteProp;
+}> = ({ route }) => {
+  const navigation = useNavigation<RootStackNavigationProp>();
+  const post = route?.params?.post ?? null;
+  const user = useAppSelector(selectUser);
+  const dispatch = useAppDispatch();
+  const [isSendingComment, setIsSendingComment] = useState<boolean>(false);
+  const [writingComment, setWritingComment] = useState<string>("");
+  const [comments, setComments] = useState<Comment[]>(post?.comments ?? []);
+
+  console.log("user", user);
+  if (!post?.comments || !user) {
+    Alert.alert("No comments or no user");
+    navigation.navigate(ScreenName.Posts);
+    return null;
+  }
+
+  const handleSendComment = async () => {
+    if (writingComment.length === 0 || !post.id) {
+      return;
+    }
+
+    setIsSendingComment(true);
+
+    try {
+      const updatedPost = await addCommentToPost({
+        postId: post.id,
+        comment: {
+          text: writingComment,
+          date: new Date().toISOString(),
+          postId: post.id,
+          userId: user.id,
+          id: uuid.v4() as string,
+        },
+      });
+
+      setWritingComment("");
+      setComments(updatedPost.comments);
+      dispatch(postSliceActions.updatePost(updatedPost));
+    } catch (error) {
+      Alert.alert("createComment error", tryExtractErrorMessage(error));
+    } finally {
+      setIsSendingComment(false);
+    }
+  };
+
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <KeyboardAvoidingView
@@ -36,11 +98,14 @@ export const CommentsScreen = () => {
 
           <Input
             placeholder="Коментувати"
-            inputState={{ value: "", isValid: true }}
-            onChangeText={() => {}}
+            inputState={{ value: writingComment, isValid: true }}
+            onChangeText={(value) => setWritingComment(value)}
             inputStyle={styles.commentInput}
             rightButton={
-              <TouchableOpacity>
+              <TouchableOpacity
+                disabled={writingComment.length === 0 || isSendingComment}
+                onPress={handleSendComment}
+              >
                 <SendIcon />
               </TouchableOpacity>
             }
@@ -83,27 +148,3 @@ const styles = StyleSheet.create({
     transform: [{ translateY: -17 }], // 50% of send icon height
   },
 });
-
-const comments: Comment[] = [
-  {
-    id: 1,
-    text: "Really love your most recent photo. I’ve been trying to capture the same thing for a few months and would love some tips!",
-    date: "09 червня, 2020 | 08:40",
-    avatar: require("../../assets/images/comments-avatar2.png"),
-    isOwner: false,
-  },
-  {
-    id: 2,
-    text: "A fast 50mm like f1.8 would help with the bokeh. I’ve been using primes as they tend to get a bit sharper images.",
-    date: "09 червня, 2020 | 09:14",
-    avatar: require("../../assets/images/comments-avatar1.png"),
-    isOwner: true,
-  },
-  {
-    id: 3,
-    text: "Thank you! That was very helpful!",
-    date: "09 червня, 2020 | 09:20",
-    avatar: require("../../assets/images/comments-avatar2.png"),
-    isOwner: false,
-  },
-];

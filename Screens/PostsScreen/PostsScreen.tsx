@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Dimensions,
   Image,
   ScrollView,
@@ -8,14 +9,37 @@ import {
 } from "react-native";
 import { BottomMenu } from "../../components/BottomMenu/BottomMenu";
 import { PostItem } from "../ProfileScreen/PostItem";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { selectPosts } from "../../store/postSelectors";
-import { useAppSelector } from "../../store/store";
+import { useAppDispatch, useAppSelector } from "../../store/store";
+import { getPosts } from "../../firebase/firestore";
+import { postSliceActions } from "../../store/postSlice";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
 export const PostsScreen: FC = () => {
   const posts = useAppSelector(selectPosts);
+  const dispatch = useAppDispatch();
+
+  const [isLoading, setIsLoading] = useState<boolean>(posts.length === 0);
+
+  useEffect(() => {
+    if (posts.length === 0) {
+      getPosts().then((posts) => {
+        console.log("posts", posts);
+        dispatch(postSliceActions.setPosts(posts));
+        setIsLoading(false);
+      });
+    }
+  }, []);
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

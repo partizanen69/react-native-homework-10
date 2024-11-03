@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Dimensions,
   Image,
   ScrollView,
@@ -11,14 +12,36 @@ import { PostItem } from "./PostItem";
 import { CrossIcon } from "../../icons/cross-icon";
 import { BottomMenu } from "../../components/BottomMenu/BottomMenu";
 import { LogoutBtn } from "../../components/LogoutBtn/LogoutBtn";
-import { FC } from "react";
-import { useAppSelector } from "../../store/store";
+import { FC, useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../../store/store";
 import { selectPosts } from "../../store/postSelectors";
+import { postSliceActions } from "../../store/postSlice";
+import { getPosts } from "../../firebase/firestore";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
 export const ProfileScreen: FC = () => {
   const posts = useAppSelector(selectPosts);
+  const dispatch = useAppDispatch();
+
+  const [isLoading, setIsLoading] = useState<boolean>(posts.length === 0);
+
+  useEffect(() => {
+    if (posts.length === 0) {
+      getPosts().then((posts) => {
+        dispatch(postSliceActions.setPosts(posts));
+        setIsLoading(false);
+      });
+    }
+  }, []);
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

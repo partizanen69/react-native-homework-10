@@ -22,7 +22,9 @@ import { ScreenName } from "../../App.consts";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackNavigationProp } from "../../App.types";
 import { useAppDispatch } from "../../store/store";
-import { createNewPost } from "../../store/postSlice";
+import { postSliceActions } from "../../store/postSlice";
+import { createPost } from "../../firebase/firestore";
+import { NewPost } from "../../firebase/firestore.types";
 
 export const CreatePostsScreen = () => {
   const navigation = useNavigation<RootStackNavigationProp>();
@@ -73,19 +75,25 @@ export const CreatePostsScreen = () => {
       publish();
     };
 
-    const publish = () => {
-      dispatch(
-        createNewPost({
-          image: { uri: capturedPhoto },
-          name: postTitle || "Без назви",
-          location,
-          commentsCount: 0,
-          likesCount: 0,
-        })
-      );
+    const publish = async () => {
+      const newPost: NewPost = {
+        image: { uri: capturedPhoto },
+        name: postTitle || "Без назви",
+        location,
+        comments: [],
+        likesCount: 0,
+      };
 
-      setPublishInProgress(false);
-      navigation.push(ScreenName.Posts);
+      try {
+        const createdPost = await createPost(newPost);
+        dispatch(postSliceActions.createNewPost(createdPost));
+
+        navigation.push(ScreenName.Posts);
+      } catch (error) {
+        console.error("firestore createPost error", error);
+      } finally {
+        setPublishInProgress(false);
+      }
     };
 
     console.log("publishing photo...");

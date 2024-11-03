@@ -1,4 +1,5 @@
 import {
+  Alert,
   Image,
   Keyboard,
   KeyboardAvoidingView,
@@ -15,9 +16,15 @@ import { InputState } from "./RegistrationScreen/RegistrationScreen.types";
 import { ScreenName } from "../App.consts";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackNavigationProp } from "../App.types";
+import { loginUserInDb } from "../firebase/firebase-auth";
+import { useAppDispatch } from "../store/store";
+import { tryExtractErrorMessage } from "../App.utils";
+import { userSliceActions } from "../store/userSlice";
 
 export const LoginScreen = () => {
   const navigation = useNavigation<RootStackNavigationProp>();
+  const dispatch = useAppDispatch();
+
   const [emailState, setEmailState] = useState<InputState>({
     value: "",
     isValid: true,
@@ -27,23 +34,23 @@ export const LoginScreen = () => {
     isValid: true,
   });
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [loginInProgress, setLoginInProgress] = useState<boolean>(false);
 
   const handleEmailChange = (text: string) => {
-    setEmailState({ value: text, isValid: true });
+    setEmailState({ value: text.trim(), isValid: true });
   };
 
   const handlePasswordChange = (text: string) => {
-    console.log("Password changed", text);
-    setPasswordState({ value: text, isValid: true });
+    setPasswordState({ value: text.trim(), isValid: true });
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     console.log("Form values", {
       email: emailState.value,
       password: passwordState.value,
     });
 
-    if (emailState.value.trim() === "") {
+    if (emailState.value === "") {
       setEmailState((prev) => ({
         ...prev,
         isValid: false,
@@ -51,7 +58,7 @@ export const LoginScreen = () => {
       }));
     }
 
-    if (passwordState.value.trim() === "") {
+    if (passwordState.value === "") {
       setPasswordState((prev) => ({
         ...prev,
         isValid: false,
@@ -64,6 +71,32 @@ export const LoginScreen = () => {
     }
 
     console.log("Logging in...");
+
+    try {
+      setLoginInProgress(true);
+      const user = await loginUserInDb({
+        email: emailState.value,
+        password: passwordState.value,
+      });
+      console.log("login was successful", user);
+
+      dispatch(
+        userSliceActions.setUser({
+          id: user.uid,
+          name: user.displayName || "no name",
+          email: user.email || emailState.value,
+        })
+      );
+
+      navigation.navigate(ScreenName.Posts);
+    } catch (error) {
+      Alert.alert(
+        "Під час входу виникла помилка",
+        tryExtractErrorMessage(error)
+      );
+    } finally {
+      setLoginInProgress(false);
+    }
   };
 
   return (
@@ -103,9 +136,9 @@ export const LoginScreen = () => {
 
           <View style={styles.loginButtonWrap}>
             <TouchableOpacity
-              // onPress={handleLogin}
-              onPress={() => navigation.navigate(ScreenName.Posts)}
+              onPress={handleLogin}
               style={styles.loginButton}
+              disabled={loginInProgress}
             >
               <Text style={styles.loginButtonText}>Увійти</Text>
             </TouchableOpacity>
@@ -114,6 +147,7 @@ export const LoginScreen = () => {
               <Text style={styles.underButtonText}>Немає акаунту? </Text>
               <TouchableOpacity
                 onPress={() => navigation.navigate(ScreenName.Registration)}
+                disabled={loginInProgress}
               >
                 <Text style={styles.underButtonText}>Зареєструватися</Text>
               </TouchableOpacity>

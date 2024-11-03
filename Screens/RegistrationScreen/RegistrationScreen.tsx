@@ -1,4 +1,5 @@
 import {
+  Alert,
   Dimensions,
   Image,
   Keyboard,
@@ -16,11 +17,19 @@ import { InputState } from "./RegistrationScreen.types";
 import { useNavigation } from "@react-navigation/native";
 import { ScreenName } from "../../App.consts";
 import { RootStackNavigationProp } from "../../App.types";
+import {
+  registerUserInDb,
+  updateUserProfile,
+} from "../../firebase/firebase-auth";
+import { tryExtractErrorMessage } from "../../App.utils";
+import { useAppDispatch } from "../../store/store";
+import { userSliceActions } from "../../store/userSlice";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
 export const RegistrationScreen = () => {
   const navigation = useNavigation<RootStackNavigationProp>();
+  const dispatch = useAppDispatch();
   const [loginState, setLoginState] = useState<InputState>({
     value: "",
     isValid: true,
@@ -34,27 +43,29 @@ export const RegistrationScreen = () => {
     isValid: true,
   });
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [registrationInProgress, setRegistrationInProgress] =
+    useState<boolean>(false);
 
   const handleLoginChange = (text: string) => {
-    setLoginState({ value: text, isValid: true });
+    setLoginState({ value: text.trim(), isValid: true });
   };
 
   const handleEmailChange = (text: string) => {
-    setEmailState({ value: text, isValid: true });
+    setEmailState({ value: text.trim(), isValid: true });
   };
 
   const handlePasswordChange = (text: string) => {
-    setPasswordState({ value: text, isValid: true });
+    setPasswordState({ value: text.trim(), isValid: true });
   };
 
-  const handleRegistration = () => {
+  const handleRegistration = async () => {
     console.log("Form values", {
       login: loginState.value,
       email: emailState.value,
       password: passwordState.value,
     });
 
-    if (loginState.value.trim() === "") {
+    if (loginState.value === "") {
       setLoginState((prev) => ({
         ...prev,
         isValid: false,
@@ -62,7 +73,7 @@ export const RegistrationScreen = () => {
       }));
     }
 
-    if (emailState.value.trim() === "") {
+    if (emailState.value === "") {
       setEmailState((prev) => ({
         ...prev,
         isValid: false,
@@ -70,7 +81,7 @@ export const RegistrationScreen = () => {
       }));
     }
 
-    if (passwordState.value.trim() === "") {
+    if (passwordState.value === "") {
       setPasswordState((prev) => ({
         ...prev,
         isValid: false,
@@ -83,6 +94,36 @@ export const RegistrationScreen = () => {
     }
 
     console.log("Registering...");
+
+    try {
+      setRegistrationInProgress(true);
+      const user = await registerUserInDb({
+        email: emailState.value,
+        password: passwordState.value,
+      });
+      console.log("registration was successful", user);
+
+      dispatch(
+        userSliceActions.setUser({
+          id: user.uid,
+          name: user.displayName || loginState.value,
+          email: user.email || emailState.value,
+        })
+      );
+      navigation.navigate(ScreenName.Posts);
+
+      console.log("Updating user profile in background...");
+      updateUserProfile({ displayName: loginState.value }).catch((error) => {
+        console.error("Could not update user profile in background", error);
+      });
+    } catch (error) {
+      Alert.alert(
+        "Під час реєстрації виникла помилка",
+        tryExtractErrorMessage(error)
+      );
+    } finally {
+      setRegistrationInProgress(false);
+    }
   };
 
   return (
@@ -135,8 +176,9 @@ export const RegistrationScreen = () => {
 
           <View style={styles.registrationButtonWrap}>
             <TouchableOpacity
-              onPress={() => navigation.navigate(ScreenName.Posts)}
+              onPress={handleRegistration}
               style={styles.registrationButton}
+              disabled={registrationInProgress}
             >
               <Text style={styles.registrationButtonText}>Зареєструватися</Text>
             </TouchableOpacity>
@@ -144,6 +186,7 @@ export const RegistrationScreen = () => {
             <View style={styles.underButtonWrap}>
               <Text style={styles.underButtonText}>Вже є акаунт? </Text>
               <TouchableOpacity
+                disabled={registrationInProgress}
                 onPress={() => navigation.navigate(ScreenName.Login)}
               >
                 <Text style={styles.underButtonText}>Увійти</Text>
