@@ -19,9 +19,10 @@ import { useRef, useState } from "react";
 import * as Location from "expo-location";
 
 import { ScreenName } from "../../App.consts";
-import { usePosts } from "../../store/posts";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackNavigationProp } from "../../App.types";
+import { useAppDispatch } from "../../store/store";
+import { createNewPost } from "../../store/postSlice";
 
 export const CreatePostsScreen = () => {
   const navigation = useNavigation<RootStackNavigationProp>();
@@ -30,7 +31,7 @@ export const CreatePostsScreen = () => {
 
   const [postTitle, setPostTitle] = useState<string>("");
   const [postLocation, setPostLocation] = useState<string>("");
-  const { createPost } = usePosts();
+  const dispatch = useAppDispatch();
 
   const cameraRef = useRef<CameraView | null>(null);
 
@@ -73,13 +74,15 @@ export const CreatePostsScreen = () => {
     };
 
     const publish = () => {
-      createPost({
-        image: { uri: capturedPhoto },
-        name: postTitle || "Без назви",
-        location,
-        commentsCount: 0,
-        likesCount: 0,
-      });
+      dispatch(
+        createNewPost({
+          image: { uri: capturedPhoto },
+          name: postTitle || "Без назви",
+          location,
+          commentsCount: 0,
+          likesCount: 0,
+        })
+      );
 
       setPublishInProgress(false);
       navigation.push(ScreenName.Posts);

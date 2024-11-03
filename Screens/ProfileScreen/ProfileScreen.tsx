@@ -11,13 +11,14 @@ import { PostItem } from "./PostItem";
 import { CrossIcon } from "../../icons/cross-icon";
 import { BottomMenu } from "../../components/BottomMenu/BottomMenu";
 import { LogoutBtn } from "../../components/LogoutBtn/LogoutBtn";
-import { usePosts } from "../../store/posts";
 import { FC } from "react";
+import { useAppSelector } from "../../store/store";
+import { selectPosts } from "../../store/postSelectors";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
 export const ProfileScreen: FC = () => {
-  const { posts } = usePosts();
+  const posts = useAppSelector(selectPosts);
 
   return (
     <View style={styles.container}>

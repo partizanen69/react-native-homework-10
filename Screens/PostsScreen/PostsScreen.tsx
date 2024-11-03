@@ -8,13 +8,14 @@ import {
 } from "react-native";
 import { BottomMenu } from "../../components/BottomMenu/BottomMenu";
 import { PostItem } from "../ProfileScreen/PostItem";
-import { usePosts } from "../../store/posts";
 import { FC } from "react";
+import { selectPosts } from "../../store/postSelectors";
+import { useAppSelector } from "../../store/store";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
 export const PostsScreen: FC = () => {
-  const { posts } = usePosts();
+  const posts = useAppSelector(selectPosts);
 
   return (
     <View style={styles.container}>
