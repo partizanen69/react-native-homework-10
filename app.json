@@ -18,6 +18,7 @@
       }
     },
     "android": {
+      "package": "com.reactnative.neoversity",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -30,6 +31,17 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "efffe54c-7216-45cd-b7b8-3e04225403bc"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/efffe54c-7216-45cd-b7b8-3e04225403bc"
     }
   }
 }
